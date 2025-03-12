@@ -15,36 +15,18 @@ pipeline {
         choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Select Action')
     }
     stages {
-        stage('Init') {
+        stage('Init and Plan') {
             steps {
-                sh """
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                    sh """
                         cd 00-vpc
                         terraform init -reconfigure
-                        
+                        terraform plan -out=tfplan
                     """
                 }
             }
         }
-        stage('Plan') {
-            steps {
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh 'cd 00-vpc'
-                    sh 'terraform plan -out=tfplan'
-                }
-            }
-        }
-        // stage('Init and Plan') {
-        //     steps {
-        //         withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-        //             sh """
-        //                 cd 00-vpc
-        //                 terraform init -reconfigure
-        //                 terraform plan -out=tfplan
-        //             """
-        //         }
-        //     }
-        // }
-
+    }
         // stage('Apply or Destroy') {
         //     /* input {
         //         message "Should we continue to ${params.ACTION}"

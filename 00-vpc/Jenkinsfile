@@ -21,12 +21,12 @@ pipeline {
                     sh """
                         cd 00-vpc
                         terraform init -reconfigure
-                        terraform plan -out=tfplan
+                        
                     """
                 }
             }
         }
-        // stage('Apply or Destroy') {
+        // stage('Apply or Destroy') { terraform plan -out=tfplan
         //     input {
         //         message "Should we continue to ${params.ACTION}"
         //         ok "Yes, we should."

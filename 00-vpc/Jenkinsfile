@@ -17,7 +17,7 @@ pipeline {
     stages {
         stage('Init') {
             steps {
-                withAWS(region: 'us-east-1', credentials: 'aws-cred') {
+                //withAWS(region: 'us-east-1', credentials: 'aws-cred') {
                     sh """
                         cd 00-vpc
                         terraform init -reconfigure
@@ -55,7 +55,8 @@ pipeline {
         //         build job: '10-sg', parameters: [string(name: 'ACTION', value: "apply")], wait: false
         //     }
         // }
-    }
+    //}
+
 
     post {
         always{

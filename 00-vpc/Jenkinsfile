@@ -5,7 +5,7 @@ pipeline {
     options{
         timeout(time: 30, unit: 'MINUTES')
         disableConcurrentBuilds()
-        ansiColor('xterm')
+        //ansiColor('xterm')
     }
     // environment {
     //     DEBUG = 'true'
@@ -61,7 +61,9 @@ pipeline {
     post {
         always{
             echo "This sections runs always"
-            deleteDir()
+            deleteDir() //here we will get provider.exe which is huge memory
+            // every time we run the tf build we will get 1 provider.exe file, 
+            // if we dont delete it, with in 20 days all the memory will be out of space.
         }
         success{
             echo "This section run when pipeline success"

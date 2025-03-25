@@ -17,24 +17,25 @@ pipeline {
     stages {
         stage('Init and Plan') {
             steps {
-                withAWS(region: 'us-east-1', credentials: 'aws-cred') {
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
                     sh """
-                        cd 00-vpc
+                        cd 20-bastion
                         terraform init -reconfigure
                         terraform plan -out=tfplan
                     """
                 }
             }
         }
-        stage('Apply or Destroy') { 
-            input {
+
+        stage('Apply or Destroy') {
+            /* input {
                 message "Should we continue to ${params.ACTION}"
                 ok "Yes, we should."
-            }
+            } */
             steps {
-                withAWS(region: 'us-east-1', credentials: 'aws-cred') {
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
                     sh """
-                        cd 00-vpc
+                        cd 20-bastion
                         if [ ${params.ACTION} == 'apply' ]
                         then
                             terraform apply -auto-approve tfplan
@@ -46,22 +47,14 @@ pipeline {
                 }
             }
         }
-        stage('Trigger SG') {
-            when {
-                expression { params.ACTION == 'apply' }
-            }
-            steps{
-                build job: '10-sg', parameters: [string(name: 'ACTION', value: "apply")], wait: false
-            }
-        }
+        
+
     }
 
     post {
         always{
             echo "This sections runs always"
-            deleteDir() //here we will get provider.exe which is huge memory
-            // every time we run the tf build we will get 1 provider.exe file, 
-            // if we dont delete it, with in 20 days all the memory will be out of space.
+            deleteDir()
         }
         success{
             echo "This section run when pipeline success"
